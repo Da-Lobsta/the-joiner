@@ -23,15 +23,16 @@ try:
 	secondary_column_names_list = st.selectbox("Please select the ID column name from the secondary spreadsheet. This is the unique identifier that you will use to match with the secondary spreadsheet. Some likely choices are Beauhurst URL, company name, and Companies House ID.",original_names_right)
 
 except:
+	
 	st.write('')
 
 # join the data into a merged spreadsheet and make it available for download
 if st.button('Join my data'):
 	df_new = left_df.merge(right=right_df, 
-        				   left_on=primary_column_names_list, 
-            			   right_on=secondary_column_names_list,
-            			   how='left',
-						   suffixes=('_left', '_right'))
+        		       left_on=primary_column_names_list, 
+            		       right_on=secondary_column_names_list,
+            		       how='left',
+			       suffixes=('_left', '_right'))
 
 	df_new = df_new.rename(columns=lambda x: x.replace('_left', ''))
 	df_new = df_new.rename(columns=lambda x: x.replace('_right', ''))
@@ -41,23 +42,21 @@ if st.button('Join my data'):
 	df_new.drop(columns=secondary_column_names_list, inplace=True)
 
 	def convert_df(df):
-			# Cache the conversion to prevent computation on rerun
+		# Cache the conversion to prevent computation on rerun
 		return df.to_csv(index=False).encode('utf-8')
 		
 	csv = convert_df(df_new)
 		
-	st.download_button(
-				label="Download data as CSV",
-				data=csv,
-				file_name='new_df.csv',
-				mime='text/csv',
-			    )
+	st.download_button(label="Download data as CSV",
+			   data=csv,
+			   file_name='new_df.csv',
+			   mime='text/csv')
 
 else:
 	st.info(
 		f"""
-			👆 Just add a CSV, no need to alter the column names.
-			"""
+		👆 Just add a CSV, no need to alter the column names.
+		"""
 		)
 
 	st.stop()
